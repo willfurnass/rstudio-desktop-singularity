@@ -1,0 +1,34 @@
+BootStrap: docker
+From: centos:8
+
+%setup
+    cp assets/VirtualGL.repo ${SINGULARITY_ROOTFS}/etc/yum.repos.d
+
+%post
+    dnf install -y 'dnf-command(config-manager)'
+    dnf config-manager --set-enabled PowerTools
+    dnf update -y
+    dnf install -y epel-release
+
+    dnf install -y \
+        wget \
+        mesa-libGL \
+        R \
+        VirtualGL
+
+    wget https://download1.rstudio.org/desktop/centos8/x86_64/rstudio-1.3.1093-x86_64.rpm
+    dnf localinstall -y rstudio-1.3.1093-x86_64.rpm
+
+    dnf clean all 
+    rm -rf /var/cache/yum
+
+#%environment
+
+%runscript
+    vglrun rstudio
+
+%labels
+Maintainer willfurnass
+Version v0.1
+
+
